@@ -1,28 +1,142 @@
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.admin-card {
+.admin-tab-card {
   padding: 1.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--primary-light);
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--accent-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 6px var(--glass-shadow);
 }
 
-.admin-card h3 {
+.admin-tab-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.admin-tab-card.active-card {
+  border: 2px solid var(--accent);
+  background: rgba(170, 59, 255, 0.1); /* fallback */
+  box-shadow: 0 0 15px var(--accent-bg);
+}
+
+.admin-tab-card h2 {
   margin-top: 0;
-  color: var(--primary-color);
+  color: var(--text-h);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
-.file-input {
-  margin-top: auto;
+.admin-tab-card p {
+  color: var(--text);
+  font-size: 0.9rem;
+  margin: 0;
 }
 
-.btn-primary {
-  margin-top: auto;
+.admin-content-area {
+  margin-top: 2rem;
+}
+
+.admin-content-panel {
+  padding: 2rem;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--accent-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px var(--glass-shadow);
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating label styles */
+.floating-label-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.floating-label-group input, 
+.floating-label-group select {
+  width: 100%;
+  padding: 1rem 0.75rem 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-h);
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.floating-label-group input:focus, 
+.floating-label-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-bg);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.floating-label-group label {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  color: var(--text);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.floating-label-group input:focus ~ label,
+.floating-label-group input:not(:placeholder-shown) ~ label,
+.floating-label-group select:focus ~ label,
+.floating-label-group select:not([value=""]) ~ label {
+  top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+  transform: translateY(0);
+}
+
+.form-group-flex {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-group-flex .floating-label-group {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+
+.form-group-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 500px;
+  margin-bottom: 2rem;
+}
+
+.admin-action-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }

@@ -185,40 +185,49 @@ const AdminDashboard = () => {
       <h1>Admin Control Panel</h1>
       
       <div className="admin-grid">
-        <div className={`card ${activeTab === 'manage-users' ? 'active-card' : ''}`} onClick={() => setActiveTab('manage-users')} style={{cursor:'pointer', display:'flex', flexDirection:'column'}}>
+        <div className={`admin-tab-card ${activeTab === 'manage-users' ? 'active-card' : ''}`} onClick={() => setActiveTab('manage-users')}>
           <h2>Team Management</h2>
-          <p style={{color:'var(--text-light)', marginBottom:'1rem'}}>{users.length} Active Members</p>
+          <p>{users.length} Active Members</p>
         </div>
         
-        <div className={`card ${activeTab === 'approvals' ? 'active-card' : ''}`} onClick={() => setActiveTab('approvals')} style={{cursor:'pointer', display:'flex', flexDirection:'column'}}>
+        <div className={`admin-tab-card ${activeTab === 'approvals' ? 'active-card' : ''}`} onClick={() => setActiveTab('approvals')}>
           <h2>Approvals</h2>
-          <p style={{color:'var(--text-light)', marginBottom:'1rem'}}>{pendingCompanies.length} Pending Companies</p>
+          <p>{pendingCompanies.length} Pending Companies</p>
         </div>
 
-        <div className={`card ${activeTab === 'add-companies' ? 'active-card' : ''}`} onClick={() => setActiveTab('add-companies')} style={{cursor:'pointer', display:'flex', flexDirection:'column'}}>
+        <div className={`admin-tab-card ${activeTab === 'add-companies' ? 'active-card' : ''}`} onClick={() => setActiveTab('add-companies')}>
           <h2>Add Companies</h2>
-          <p style={{color:'var(--text-light)', marginBottom:'1rem'}}>Directly add approved companies</p>
+          <p>Directly add approved companies</p>
         </div>
         
-        <div className={`card ${activeTab === 'data-import' ? 'active-card' : ''}`} onClick={() => setActiveTab('data-import')} style={{cursor:'pointer', display:'flex', flexDirection:'column'}}>
+        <div className={`admin-tab-card ${activeTab === 'data-import' ? 'active-card' : ''}`} onClick={() => setActiveTab('data-import')}>
           <h2>Data Import</h2>
-          <p style={{color:'var(--text-light)', marginBottom:'1rem'}}>Bulk upload student data</p>
+          <p>Bulk upload student data</p>
         </div>
       </div>
 
-      <div className="admin-content-area" style={{marginTop: '2rem'}}>
+      <div className="admin-content-area">
         {activeTab === 'manage-users' && (
-          <div className="card">
+          <div className="admin-content-panel">
             <h2>Team Management</h2>
-            <form onSubmit={handleAddUser} style={{display:'flex', gap:'1rem', marginBottom:'2rem'}}>
-              <input type="text" placeholder="Username" value={newUsername} onChange={e => setNewUsername(e.target.value)} required className="form-input" />
-              <input type="password" placeholder="Password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required className="form-input" />
-              <select value={newRole} onChange={e => setNewRole(e.target.value)} className="form-input">
-                <option value="LEAD">Lead</option>
-                <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-              <button type="submit" className="btn-primary">Add Member</button>
+            <form onSubmit={handleAddUser} className="form-group-flex">
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newUsername} onChange={e => setNewUsername(e.target.value)} required />
+                <label>Username</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="password" placeholder=" " value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+                <label>Password</label>
+              </div>
+              <div className="floating-label-group">
+                <select value={newRole} onChange={e => setNewRole(e.target.value)}>
+                  <option value="LEAD">Lead</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+                <label style={{top: '0.25rem', fontSize: '0.75rem', color: 'var(--accent)', transform: 'translateY(0)'}}>Role</label>
+              </div>
+              <button type="submit" className="btn-primary" style={{alignSelf: 'stretch', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Add Member</button>
             </form>
             <table className="data-table">
               <thead>
@@ -246,7 +255,7 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === 'approvals' && (
-          <div className="card">
+          <div className="admin-content-panel">
             <h2>Pending Company Approvals</h2>
             {pendingCompanies.length === 0 ? <p>No pending approvals.</p> : (
               <table className="data-table">
@@ -280,16 +289,37 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === 'add-companies' && (
-          <div className="card">
+          <div className="admin-content-panel">
             <h2>Add Company</h2>
-            <form onSubmit={handleAddCompany} style={{display:'flex', flexDirection:'column', gap:'1rem', marginBottom:'2rem', maxWidth: '400px'}}>
-              <input type="text" placeholder="Company Name" value={newCompanyName} onChange={e => setNewCompanyName(e.target.value)} required className="form-input" />
-              <input type="text" placeholder="Location" value={newCompanyLocation} onChange={e => setNewCompanyLocation(e.target.value)} required className="form-input" />
-              <input type="text" placeholder="Company Size" value={newCompanySize} onChange={e => setNewCompanySize(e.target.value)} className="form-input" />
-              <input type="number" step="0.1" placeholder="CTC (LPA)" value={newCompanyCtc} onChange={e => setNewCompanyCtc(e.target.value)} className="form-input" />
-              <input type="text" placeholder="Contact Person" value={newContactPerson} onChange={e => setNewContactPerson(e.target.value)} className="form-input" />
-              <input type="email" placeholder="Contact Email" value={newContactEmail} onChange={e => setNewContactEmail(e.target.value)} className="form-input" />
-              <input type="text" placeholder="Contact Mobile" value={newContactMobile} onChange={e => setNewContactMobile(e.target.value)} className="form-input" />
+            <form onSubmit={handleAddCompany} className="form-group-col">
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newCompanyName} onChange={e => setNewCompanyName(e.target.value)} required />
+                <label>Company Name</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newCompanyLocation} onChange={e => setNewCompanyLocation(e.target.value)} required />
+                <label>Location</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newCompanySize} onChange={e => setNewCompanySize(e.target.value)} />
+                <label>Company Size</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="number" step="0.1" placeholder=" " value={newCompanyCtc} onChange={e => setNewCompanyCtc(e.target.value)} />
+                <label>CTC (LPA)</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newContactPerson} onChange={e => setNewContactPerson(e.target.value)} />
+                <label>Contact Person</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="email" placeholder=" " value={newContactEmail} onChange={e => setNewContactEmail(e.target.value)} />
+                <label>Contact Email</label>
+              </div>
+              <div className="floating-label-group">
+                <input type="text" placeholder=" " value={newContactMobile} onChange={e => setNewContactMobile(e.target.value)} />
+                <label>Contact Mobile</label>
+              </div>
               <div>
                 <label style={{fontSize: '0.9rem', marginBottom: '0.25rem', display: 'block'}}>JD File (PDF/DOC)</label>
                 <input type="file" accept=".pdf,.doc,.docx" onChange={e => setJdFile(e.target.files[0])} className="form-input" style={{padding: '0.25rem'}} />
@@ -300,9 +330,9 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === 'data-import' && (
-          <div className="card">
+          <div className="admin-content-panel">
             <h2>Data Import & Tools</h2>
-            <div style={{display:'flex', gap:'1rem', alignItems:'center', marginBottom: '1.5rem'}}>
+            <div className="admin-action-bar">
               <input type="file" onChange={e => setFile(e.target.files[0])} className="form-input" />
               <button onClick={handleFileUpload} className="btn-primary">Upload Excel</button>
             </div>

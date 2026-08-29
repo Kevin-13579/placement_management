@@ -11,13 +11,19 @@ import CompanyDashboard from './pages/CompanyDashboard/CompanyDashboard';
 import ReportsDashboard from './pages/ReportsDashboard/ReportsDashboard';
 import LoginPage from './pages/LoginPage/LoginPage';
 
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+
 const Navbar = () => {
   const { role, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   
   return (
-    <nav className="navbar">
+    <nav className="navbar glass-panel">
       <div className="logo">Placement Portal</div>
       <div className="role-switcher">
+        <button onClick={toggleTheme} className="btn-toggle-theme">
+          {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+        </button>
         <label>Active Role: <strong>{role}</strong></label>
         <button onClick={logout} className="btn-logout" style={{marginLeft: '1rem', padding: '0.5rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>Logout</button>
       </div>
@@ -29,7 +35,7 @@ const Sidebar = () => {
   const { role } = useAuth();
   
   return (
-    <aside className="sidebar">
+    <aside className="sidebar glass-panel">
       <h3>Dashboards</h3>
       <ul>
         {role === 'ADMIN' && <li><Link to="/admin">Admin Panel</Link></li>}
@@ -93,11 +99,13 @@ const DashboardRouter = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <DashboardRouter />
-      </Router>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <DashboardRouter />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

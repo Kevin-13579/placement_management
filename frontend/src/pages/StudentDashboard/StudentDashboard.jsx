@@ -140,9 +140,9 @@ const StudentDashboard = () => {
       </div>
       
       <div className="stats-abstract">
-        <div className="stat-card">Total Students: {students.length}</div>
-        <div className="stat-card">Placed: {totalPlaced}</div>
-        <div className="stat-card">Searching: {totalUnplaced}</div>
+        <div className="stat-card glass-panel">Total Students: {students.length}</div>
+        <div className="stat-card glass-panel">Placed: {totalPlaced}</div>
+        <div className="stat-card glass-panel">YTBS: {totalUnplaced}</div>
       </div>
 
       {role !== 'STUDENT' && (
@@ -158,7 +158,7 @@ const StudentDashboard = () => {
         </div>
       )}
 
-      <div className="table-container">
+      <div className="table-container glass-panel">
         <table className="student-table">
           <thead>
             <tr>
@@ -180,7 +180,7 @@ const StudentDashboard = () => {
                     <td><input name="regNo" value={editFormData.regNo || ''} onChange={handleEditChange} style={{width:'80px'}}/></td>
                     <td><input name="department" value={editFormData.department || ''} onChange={handleEditChange} style={{width:'80px'}}/></td>
                     <td>{student.atsScore || 0}</td>
-                    <td>{student.placedCompany != null ? 'Placed' : 'Searching'}</td>
+                    <td>{student.placedCompany != null ? 'Placed' : 'YTBS'}</td>
                     <td>
                       <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleResumeUpload(e, student.id)} style={{width: '120px', fontSize: '0.8rem'}}/>
                     </td>
@@ -201,7 +201,7 @@ const StudentDashboard = () => {
                         {student.atsScore || 0}
                       </span>
                     </td>
-                    <td>{student.placedCompany != null ? 'Placed' : 'Searching'}</td>
+                    <td>{student.placedCompany != null ? 'Placed' : 'YTBS'}</td>
                     <td>{student.ctcInLpa || '-'}</td>
                     {(role === 'MANAGER' || role === 'ADMIN' || role === 'LEAD' || role === 'STUDENT') && (
                       <td>
