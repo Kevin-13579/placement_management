@@ -1,5 +1,5 @@
-# Use official Maven/Java 17 image to build
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Use official Maven/Java 21 image to build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 # Download dependencies
@@ -9,7 +9,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Use lightweight JRE image for running
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 # Copy the built jar
 COPY --from=build /app/target/*.jar app.jar
