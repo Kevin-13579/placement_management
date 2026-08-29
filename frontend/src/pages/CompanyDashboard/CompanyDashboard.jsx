@@ -171,6 +171,9 @@ const CompanyDashboard = () => {
             <th>Company Name</th>
             <th>Location</th>
             <th>Size</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Mobile</th>
             <th>Approval</th>
             <th>Action</th>
           </tr>
@@ -181,6 +184,9 @@ const CompanyDashboard = () => {
               <td>{c.name}</td>
               <td>{c.location || 'N/A'}</td>
               <td>{c.companySize || 'N/A'}</td>
+              <td>{c.contactPerson || 'N/A'}</td>
+              <td>{c.contactPersonEmail || 'N/A'}</td>
+              <td>{c.contactPersonMobile || 'N/A'}</td>
               <td>
                 <span className={`status-badge ${c.approved ? 'status-hot' : 'status-cold'}`}>
                   {c.approved ? 'Approved' : 'Pending'}
@@ -193,7 +199,7 @@ const CompanyDashboard = () => {
               </td>
             </tr>
           ))}
-          {companies.length === 0 && <tr><td colSpan="5" style={{textAlign:'center'}}>No companies found.</td></tr>}
+          {companies.length === 0 && <tr><td colSpan="8" style={{textAlign:'center'}}>No companies found.</td></tr>}
         </tbody>
       </table>
 

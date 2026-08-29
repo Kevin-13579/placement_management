@@ -13,6 +13,10 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!username) {
+        setError('Please select a role first.');
+        return;
+    }
     try {
       // Mock fast login by username if it's admin/manager/lead
       const roleStr = username.toUpperCase();
@@ -34,8 +38,6 @@ const LoginPage = () => {
         } else {
           setError('Invalid register number. Could not find student profile.');
         }
-      } else {
-        setError('Invalid username. Please use admin, manager, lead, or student.');
       }
     } catch (err) {
       setError('Login failed. Please try again.');
@@ -51,26 +53,41 @@ const LoginPage = () => {
       </div>
       <div className="login-box glass-panel">
         <h2>Placement Portal</h2>
-        <p className="login-subtitle">Sign in to continue</p>
+        <p className="login-subtitle">Select your role to sign in</p>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleLogin}>
-          <div className="input-group">
-            <label>Username</label>
-            <input 
-              type="text" 
-              value={username} 
-              onChange={(e) => setUsername(e.target.value)} 
-              placeholder="e.g., admin or student"
-              required 
-            />
+          
+          <div className="role-buttons" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {['ADMIN', 'MANAGER', 'LEAD', 'STUDENT'].map(roleOption => (
+              <button 
+                type="button" 
+                key={roleOption}
+                onClick={() => setUsername(roleOption)}
+                className={username === roleOption ? 'btn-primary' : ''}
+                style={{
+                  padding: '0.5rem 1rem', 
+                  borderRadius: '20px', 
+                  border: username === roleOption ? 'none' : '1px solid var(--border-color)',
+                  background: username === roleOption ? 'var(--primary-color)' : 'transparent',
+                  color: username === roleOption ? 'white' : 'var(--text-color)',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {roleOption.charAt(0) + roleOption.slice(1).toLowerCase()}
+              </button>
+            ))}
           </div>
+
           <div className="input-group">
-            <label>Password</label>
+            <label>{username === 'STUDENT' ? 'Registration Number' : 'Password'}</label>
             <input 
-              type="password" 
+              type={username === 'STUDENT' ? 'text' : 'password'} 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
-              placeholder="Enter password (RegNo for students)"
+              placeholder={username === 'STUDENT' ? 'Enter Reg No' : 'Enter password'}
+              required
             />
           </div>
           <button type="submit" className="btn-primary login-btn">Login</button>

@@ -26,17 +26,18 @@ public class CompanyController {
         return companyRepository.findByDeletedFalse();
     }
 
+    @Autowired
+    private Cloudinary cloudinary;
+
     @PostMapping("/upload-jd")
     public ResponseEntity<String> uploadJd(@RequestParam("file") MultipartFile file) {
         try {
-            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-            Path path = Paths.get("uploads/" + filename);
-            Files.createDirectories(path.getParent());
-            file.transferTo(path);
-            return ResponseEntity.ok("http://localhost:8080/uploads/" + filename);
+            java.util.Map uploadResult = cloudinary.uploader().upload(file.getBytes(), com.cloudinary.utils.ObjectUtils.emptyMap());
+            String fileUrl = uploadResult.get("secure_url").toString();
+            return ResponseEntity.ok(fileUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error uploading file");
+            return ResponseEntity.status(500).body("Error uploading file to Cloudinary");
         }
     }
 

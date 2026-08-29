@@ -23,6 +23,8 @@ const ReportsDashboard = () => {
     fetchData();
   }, []);
 
+  const [selectedCompanyId, setSelectedCompanyId] = useState('');
+
   const totalStudents = students.length;
   const placedStudents = students.filter(s => s.placedCompany != null).length;
   const unplacedStudents = totalStudents - placedStudents;
@@ -41,11 +43,15 @@ const ReportsDashboard = () => {
     window.open(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/export?placedOnly=true`, '_blank');
   };
 
+  const studentsInSelectedCompany = students.filter(
+    s => s.placedCompany && s.placedCompany.id.toString() === selectedCompanyId
+  );
+
   return (
     <div className="dashboard-container">
       <h1>Analytics & Reports</h1>
       
-      <div className="reports-grid">
+      <div className="reports-grid" style={{ gap: '2rem', marginBottom: '2rem' }}>
         <div className="chart-placeholder">
           <h3>Placement Success Rate</h3>
           <div className="mock-pie-chart" style={{
@@ -69,7 +75,50 @@ const ReportsDashboard = () => {
         </div>
       </div>
 
-      <div className="card" style={{marginTop: '2rem'}}>
+      <div className="card" style={{marginTop: '2rem', marginBottom: '2rem'}}>
+        <h2>Company Placements</h2>
+        <div style={{ marginBottom: '1rem' }}>
+          <select 
+            value={selectedCompanyId} 
+            onChange={(e) => setSelectedCompanyId(e.target.value)}
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', width: '100%', maxWidth: '300px' }}
+          >
+            <option value="">-- Select a Company --</option>
+            {companies.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        {selectedCompanyId && (
+          <div style={{maxHeight: '400px', overflowY: 'auto'}}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Reg No</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>ATS Score</th>
+                  <th>CTC Offered</th>
+                </tr>
+              </thead>
+              <tbody>
+                {studentsInSelectedCompany.map(s => (
+                  <tr key={s.id}>
+                    <td>{s.regNo}</td>
+                    <td>{s.name}</td>
+                    <td>{s.department}</td>
+                    <td>{s.atsScore || 'N/A'}</td>
+                    <td>{s.ctcInLpa ? `${s.ctcInLpa} LPA` : 'N/A'}</td>
+                  </tr>
+                ))}
+                {studentsInSelectedCompany.length === 0 && <tr><td colSpan="5" style={{textAlign:'center'}}>No students placed in this company yet.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="card" style={{marginTop: '2rem', marginBottom: '2rem'}}>
         <h2>Students Overview</h2>
         <div style={{maxHeight: '400px', overflowY: 'auto'}}>
           <table className="data-table">
