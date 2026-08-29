@@ -9,8 +9,8 @@ const ReportsDashboard = () => {
     const fetchData = async () => {
       try {
         const [studentRes, companyRes] = await Promise.all([
-          fetch('http://localhost:8080/api/students'),
-          fetch('http://localhost:8080/api/companies')
+          fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students`),
+          fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`)
         ]);
         const studentData = await studentRes.json();
         const companyData = await companyRes.json();
@@ -34,11 +34,11 @@ const ReportsDashboard = () => {
   const completedCount = companies.filter(c => c.status === 'DRIVE_COMPLETED').length;
 
   const handleExportAll = () => {
-    window.open('http://localhost:8080/api/students/export', '_blank');
+    window.open(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/export`, '_blank');
   };
 
   const handleExportPlaced = () => {
-    window.open('http://localhost:8080/api/students/export?placedOnly=true', '_blank');
+    window.open(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/export?placedOnly=true`, '_blank');
   };
 
   return (

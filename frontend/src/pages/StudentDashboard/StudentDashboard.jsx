@@ -23,13 +23,13 @@ const StudentDashboard = () => {
   }, []);
 
   const fetchCompanies = () => {
-    axios.get('http://localhost:8080/api/companies')
+    axios.get(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`)
       .then(res => setCompanies(res.data.filter(c => c.approved)))
       .catch(err => console.error(err));
   };
 
   const fetchStudents = () => {
-    axios.get('http://localhost:8080/api/students')
+    axios.get(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students`)
       .then(response => setStudents(response.data))
       .catch(error => console.error("Error fetching students:", error));
   };
@@ -51,7 +51,7 @@ const StudentDashboard = () => {
   const handleComputeSingleAts = async (id) => {
     setComputingAtsId(id);
     try {
-      const res = await axios.post(`http://localhost:8080/api/students/${id}/compute-ats`);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/${id}/compute-ats`);
       alert(res.data.message);
       setStudents(students.map(s => s.id === id ? { ...s, atsScore: res.data.score } : s));
     } catch (err) {
@@ -65,7 +65,7 @@ const StudentDashboard = () => {
   const handleDelete = async (id) => {
     if(window.confirm("Are you sure you want to delete this student?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/students/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/${id}`);
         setStudents(students.filter(s => s.id !== id));
       } catch (err) {
         console.error("Delete failed", err);
@@ -88,7 +88,7 @@ const StudentDashboard = () => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await axios.post('http://localhost:8080/api/students/upload-resume', formData);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/upload-resume`, formData);
       // The backend returns the URL in res.data
       setEditFormData({ ...editFormData, resumeDriveLink: res.data });
       alert("Resume uploaded successfully! Click Save to apply.");
@@ -100,7 +100,7 @@ const StudentDashboard = () => {
 
   const handleEditSave = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:8080/api/students/${id}`, editFormData);
+      const res = await axios.put(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/${id}`, editFormData);
       setStudents(students.map(s => s.id === id ? res.data : s));
       setEditingId(null);
     } catch (err) {
@@ -115,7 +115,7 @@ const StudentDashboard = () => {
       return;
     }
     try {
-      const res = await axios.put(`http://localhost:8080/api/students/${placeStudentData.id}/place`, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/${placeStudentData.id}/place`, {
         companyId: selectedCompanyId,
         ctcInLpa: parseFloat(ctcInput) || null
       });

@@ -22,7 +22,7 @@ const LoginPage = () => {
         }
       } else if (roleStr === 'STUDENT') {
         // Attempt Student Login
-        const res = await axios.get('http://localhost:8080/api/students');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students`);
         const students = res.data;
         // Find student by register number (password)
         const student = students.find(s => s.regNo === password);

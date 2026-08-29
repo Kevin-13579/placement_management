@@ -25,7 +25,7 @@ const PlacementTeamDashboard = () => {
 
   const fetchCompanies = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/companies');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`);
       const data = await res.json();
       setCompanies(data.filter(c => c.approved));
     } catch (e) {
@@ -35,7 +35,7 @@ const PlacementTeamDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/users');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/users`);
       const data = await res.json();
       setUsers(data.filter(u => u.role === 'LEAD' || u.role === 'MANAGER'));
     } catch (e) {
@@ -56,7 +56,7 @@ const PlacementTeamDashboard = () => {
   const handleSaveCompany = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:8080/api/companies/${editingCompany.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/${editingCompany.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -86,7 +86,7 @@ const PlacementTeamDashboard = () => {
   const handleDeleteCompany = async () => {
     if (!window.confirm(`Are you sure you want to remove ${editingCompany.name}?`)) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/companies/${editingCompany.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/${editingCompany.id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

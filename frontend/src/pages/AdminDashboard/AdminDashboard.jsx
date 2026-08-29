@@ -36,7 +36,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/users');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/users`);
       const data = await res.json();
       setUsers(data);
     } catch (e) {
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
   const fetchCompanies = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/companies');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`);
       const data = await res.json();
       setCompanies(data);
     } catch (e) {
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:8080/api/users', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: newUsername, password: newPassword, role: newRole })
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   const handleDeleteUser = async (id) => {
     try {
-      await fetch(`http://localhost:8080/api/users/${id}`, { method: 'DELETE' });
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/users/${id}`, { method: 'DELETE' });
       fetchUsers();
     } catch (e) {
       console.error(e);
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
 
   const handleApproveCompany = async (id) => {
     try {
-      await fetch(`http://localhost:8080/api/companies/${id}/approve`, { method: 'PUT' });
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/${id}/approve`, { method: 'PUT' });
       fetchCompanies();
     } catch (e) {
       console.error(e);
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
   const handleRejectCompany = async (id) => {
     if (!window.confirm("Are you sure you want to reject and remove this company?")) return;
     try {
-      await fetch(`http://localhost:8080/api/companies/${id}`, { method: 'DELETE' });
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/${id}`, { method: 'DELETE' });
       fetchCompanies();
     } catch (e) {
       console.error(e);
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
       if (jdFile) {
         const formData = new FormData();
         formData.append("file", jdFile);
-        const uploadRes = await fetch('http://localhost:8080/api/companies/upload-jd', {
+        const uploadRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/upload-jd`, {
           method: 'POST',
           body: formData
         });
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
         }
       }
 
-      await fetch('http://localhost:8080/api/companies', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      await fetch('http://localhost:8080/api/students/upload', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/upload`, {
         method: 'POST',
         body: formData
       });
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
   const handleComputeAts = async () => {
     setComputingAts(true);
     try {
-      const res = await fetch('http://localhost:8080/api/students/compute-ats-bulk', { method: 'POST' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/compute-ats-bulk`, { method: 'POST' });
       const data = await res.json();
       alert(data.message || "Computation complete!");
     } catch (e) {

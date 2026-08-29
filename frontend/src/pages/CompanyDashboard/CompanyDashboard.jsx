@@ -25,7 +25,7 @@ const CompanyDashboard = () => {
 
   const fetchCompanies = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/companies');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`);
       const data = await res.json();
       setCompanies(data);
     } catch (e) {
@@ -35,7 +35,7 @@ const CompanyDashboard = () => {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/students');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students`);
       const data = await res.json();
       setStudents(data);
     } catch (e) {
@@ -55,7 +55,7 @@ const CompanyDashboard = () => {
       if (jdFile) {
         const formData = new FormData();
         formData.append("file", jdFile);
-        const uploadRes = await fetch('http://localhost:8080/api/companies/upload-jd', {
+        const uploadRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/upload-jd`, {
           method: 'POST',
           body: formData
         });
@@ -79,7 +79,7 @@ const CompanyDashboard = () => {
         approved: false // Always false when submitted by LEAD/MANAGER here
       };
 
-      await fetch('http://localhost:8080/api/companies', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(companyData)
