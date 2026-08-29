@@ -1,0 +1,28 @@
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.admin-card {
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--primary-light);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+.file-input {
+  margin-top: auto;
+}
+
+.btn-primary {
+  margin-top: auto;
+}

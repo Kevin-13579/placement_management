@@ -1,0 +1,41 @@
+.reports-grid {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.chart-placeholder {
+  flex: 1;
+  background-color: var(--primary-light);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.mock-pie-chart {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(var(--primary-color) 0% 65%, #ccc 65% 100%);
+  margin: 1rem auto;
+}
+
+.mock-funnel {
+  list-style-type: none;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.mock-funnel li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.export-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px dashed var(--border-color);
+}

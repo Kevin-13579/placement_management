@@ -1,0 +1,252 @@
+Login credentials ( RDBC)
+admin, manager, lead, student
+Dashboards( 4)
+Std data 
+Placement dash
+Company dash
+Reports dash
+Student dashboard
+Datas imported from a excel sheet, with parameters of 
+si no, reg no, name, gender, hostler/dayscholar, sslc %, year of completion, hsc% , year of completion, UG%, year of completion, PG% , year of completion, github id, linkedin url, resume drive link, self intro drive link, photo drvie link, year of graduation, portfolio ,email, mobile number
+Order of the columns may change, but the software should auto fetch the details into the website for the data.
+On dashboard, a abstract details should be there on the half of the screen, about name of departments, number of students, placed, not placed, etc..
+And after the half It should fetch the entire student data (where only, name, department, reg no, email, phone number, ats score should be there, irrespective to the departments, and a option for search and filer, (based on name, reg no, ats score for their uploaded resume, no of companies attended etc. if lead or admin or manager clicks a filter and chose particular department name or search department name, only  thst department students data should be fetch and option for scroll to  view entire datas.
+Placement team dashboard.
+Data maybe imported from admin panel , including parameters of 
+like name, companies spokecd with and there should a status column with (cold, warm, hot, and drive completed). They can bring companies and add that to the site.
+If the admin/ lead spoken to the company status updates from cold to warm, once they got the jd from the company side, then warm to hot, once the drive completed, hot to completed , and at end a button should be there, for download entire datas, of that 
+particular companies, stuffs like name of company, number of students registered, placed, ctc, etc..
+The dashboard will be split into 3layout, side lead member names etc. and on left side the screen splits 2 half horizontaly, above screen displyas the companys in cold, warm, and hot status. And on below screen only the drive completed companies details, and option for both the screens a button at very end to download the entire data of that particular company from the website.
+Company dashboard.
+Where every companies details will maybe
+ fetch from admin panel , or from leads , with parameters of name, location, website, contact person, contact person mobile number, contact person mail id, size of that company, status(like on cold, warm, hot, drive completed).
+And also there should be a option in the placement team dashboard to add these company data manual too , from each lead .
+For the frontend only fetch the name, location link auto fetch from google, jd link, with view preview to view the pdf/doc inside the browser itself, CTC in LPA,  mobile number, email id, approval status, ( this is which the leads will add companies, and a mail had been send to the admin, requesting an approval for that particular company shortly. And he can accept it from the admin panel.
+And there should be a option to if a particular company is selected , it should navigate to the next page, where all the students matching profiles based on their company jd and student resume, show as tables, in high ats score, to low, and there will be  a option to view the top matching profiles that 91-100 ats score students, their name,image all as a pop up window, with scroll option too , view them.
+Reports dashboard
+Where entire students data will be there, company details, placement team details, and option to download datas based on the filetering options, and while downloading students reports, there must be a ytbp for those who didn’t placed, and not attented anything means, not attented, if any student placed, the placed company name should be on the status of that student data. 
+And maybe possible add pie charts, graphs to make it understandable effectively.
+These 4 are the dashboards shown if manager, lead or student have been logged in.
+For only admin role you add one more dashboard called, admin pannel.
+Where he can add students, provide access or set access and manager, lead etc, 
+approve the requests regarding the leads about the company, everything.
+For each role :
+Admin can do everyoptions
+Manager in student dashboards, he can edit student data, or delete , if he deletes something it should automatically stored on a recycle bin or previous members dashboard( create one for that), and manage the stuffs, .
+Lead who can view rhe students details only, and he can add companies, updated status, etc.
+Student, who can only register, with name and reg no, fetched from the excel , and he can apply for any particular companie, where I need a new dashboard, to calculate his resume ATS score automatically, categorize the within 
+61-70,71-80,81-90,91-100 , and show his level, and only fetch the highly related company based on the jd , so he can apply.
+Tech stack in my mind:
+React js(with separate jsx and css)
+Springboot
+Mysql
+Vs code
+Gemini api, or any free api , to match profiles and calculate ats score.
+Feature
+Detailed Plan Scope
+3-Hour Trimmed Scope
+ATS Resume Scoring
+Live Gemini API calculation per resume during upload
+Pre-calculate ATS scores during Excel import or use mock deterministic logic.
+Authentication
+Full RBAC via Spring Security + MySQL RDBMS
+Mock JWT / Hardcoded Role Selector dropdown on UI to switch views fast.
+Dynamic Excel Parsing
+Unstructured flexible column mapping
+Require a fixed Excel template structure for SheetJS / Apache POI.
+Recycle Bin & History
+Soft-delete state architecture across databases
+Hard-delete or toggle an is_active boolean flag.
+Email Approvals
+SMTP server connection for lead-to-admin workflow
+Direct database status update via Admin toggles (Skip SMTP setup).
+Feature / Screen
+Execution Shortcut
+Authentication & RBAC
+Store current role (ADMIN, MANAGER, LEAD, STUDENT) in React State / LocalStorage. Include a quick role switcher dropdown in the navbar for presentation judges.
+Student Dashboard
+Calculate stats (Placed, Not Placed) on the fly using array filters. Render a table with sticky headers for scrolling.
+Placement Team Split Screen
+Layout using CSS Flexbox/Grid: Top half shows Kanban cards (COLD, WARM, HOT), bottom half shows completed drives table.
+Recycle Bin (Manager Action)
+Add an is_deleted: true boolean flag to student records. Display is_deleted: true records only inside the Recycle Bin view.
+Company Matching Pop-up
+Render a simple Modal displaying candidates where ats_score >= 91 with avatar images and resume links.
+Structure should be:- 
+PlacementPortal/
+│
+├
+──
+ docker-compose.yml
+│
+├
+──
+ backend/
+│   
+├
+──
+ Dockerfile
+│   
+├
+──
+ pom.xml
+│   └── src/main/java/com/portal/
+│       
+├
+──
+ PlacementApplication.java
+│       
+├
+──
+ controller/        # API Endpoints (Routing)
+│       │   
+├
+──
+ AuthController.java
+│       │   
+├
+──
+ StudentController.java
+│       │   
+├
+──
+ CompanyController.java
+│       │   └── AtsController.java
+│       
+├
+──
+ model/             # Database Entities (Tables)
+│       │   
+├
+──
+ User.java
+│       │   
+├
+──
+ Student.java
+│       │   └── Company.java
+│       
+├
+──
+ repository/        # MySQL Database Operations
+│       │   
+├
+──
+ UserRepository.java
+│       │   
+├
+──
+ StudentRepository.java
+│       │   └── CompanyRepository.java
+│       └── service/           # Business Logic & Gemini API
+│           
+├
+──
+ ExcelService.java
+│           └── GeminiAtsService.java
+│
+└── frontend/
+    
+├
+──
+ Dockerfile
+    
+├
+──
+ index.html
+    
+├
+──
+ package.json
+    └── src/
+        
+├
+──
+ App.jsx            # Main Router & Layout Switcher
+        
+├
+──
+ App.css            # Global Layout CSS
+        
+├
+──
+ components/        # Reusable Elements
+        
+├
+──
+ context/
+        │   └── AuthContext.jsx # Current User State (Admin, Lead, etc.)
+        └── pages/             # 5 Dashboards (JSX + CSS separated)
+            
+├
+──
+ StudentDashboard/
+            │   
+├
+──
+ StudentDashboard.jsx
+            │   └── StudentDashboard.css
+            
+├
+──
+ PlacementTeamDashboard/
+            │   
+├
+──
+ PlacementTeamDashboard.jsx
+            │   └── PlacementTeamDashboard.css
+            
+├
+──
+ CompanyDashboard/
+            │   
+├
+──
+ CompanyDashboard.jsx
+            │   └── CompanyDashboard.css
+            
+├
+──
+ ReportsDashboard/
+            │   
+├
+──
+ ReportsDashboard.jsx
+            │   └── ReportsDashboard.css
+            └── AdminDashboard/
+                
+├
+──
+ AdminDashboard.jsx
+                └── AdminDashboard.css
+Architecture
++-------------------+      1. Upload Excel / Match Resume       +-------------------+
+|                   | ----------------------------------------> |                   |
+|   React (Vite)    |                                           |    Spring Boot    |
+|   Frontend        | <---------------------------------------- |    Backend        |
+|                   |      4. JSON Response (ATS Scores)        |                   |
++-------------------+                                           +-------------------+
+          |                                                               |
+          | 2. Embed PDF Preview                                          | 3. POST Prompt
+          v                                                               v
++-------------------+                                           +-------------------+
+|   Google Drive    |                                           |    Gemini API     |
+|   (Direct Links)  |                                           | (gemini-2.5-flash)|
+End-to-End Execution Flow
+Excel Data Import:
+ Admin or Lead uploads an Excel sheet. The frontend dynamically parses header columns regardless of column ordering and posts student objects to the backend. 
+Dynamic Role Views (RBAC):
+ Users log in as ADMIN, MANAGER, LEAD, or STUDENT. The UI toggles layout dashboards based on the logged-in role. 
+Company Status Pipeline:
+ Placement leads add companies (COLD 
+→
+ WARM 
+→
+ HOT 
+→
+ DRIVE_COMPLETED). Updates trigger admin approval notifications if created by a lead. 
+Automated ATS Scoring:
+ When matching candidates against a Job Description, Spring Boot extracts the Google Drive file ID, fetches resume text, and queries gemini-2.5-flash in JSON Mode to output an ATS score (0–100) and category mapping. 
+Report & Export Generation:
+ Filtered student profiles and drive-completed company stats are rendered into data grids with direct CSV export support.
+Theme :- professional white with light blue.
