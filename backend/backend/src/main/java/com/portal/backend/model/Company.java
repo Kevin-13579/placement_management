@@ -34,6 +34,7 @@ public class Company {
     
     private String jdLink;
     private Double ctcInLpa;
+    private Integer candidatesPlaced;
     
     @Column(name = "is_approved")
     private Boolean approved = false;

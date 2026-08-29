@@ -68,7 +68,8 @@ const PlacementTeamDashboard = () => {
           contactPersonEmail: editingCompany.contactPersonEmail,
           contactPersonMobile: editingCompany.contactPersonMobile,
           jdLink: editingCompany.jdLink,
-          status: editingCompany.status
+          status: editingCompany.status,
+          candidatesPlaced: editingCompany.candidatesPlaced ? parseInt(editingCompany.candidatesPlaced) : null
         })
       });
       if (res.ok) {
@@ -266,6 +267,13 @@ const PlacementTeamDashboard = () => {
                 </select>
               </div>
 
+              {editingCompany.status === 'DRIVE_COMPLETED' && (
+                <div>
+                  <label>Candidates Placed</label>
+                  <input type="number" name="candidatesPlaced" value={editingCompany.candidatesPlaced || ''} onChange={handleEditChange} required style={{width: '100%', padding: '0.5rem'}} />
+                </div>
+              )}
+
               <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '1rem'}}>
                 <button type="button" className="btn-primary" onClick={handleDeleteCompany} style={{background: '#dc3545', border: 'none'}}>Remove Company</button>
                 <button type="submit" className="btn-primary">Save Changes</button>
@@ -282,7 +290,7 @@ const PlacementTeamDashboard = () => {
             <h2 style={{marginBottom: '1rem'}}>Job Description</h2>
             {viewJdLink ? (
               <iframe 
-                src={viewJdLink.includes('drive.google.com') ? viewJdLink.replace('/view', '/preview') : viewJdLink} 
+                src={viewJdLink.includes('drive.google.com') ? viewJdLink.replace('/view', '/preview') : (viewJdLink.endsWith('.pdf') ? `https://docs.google.com/viewer?url=${encodeURIComponent(viewJdLink)}&embedded=true` : viewJdLink)} 
                 title="JD Viewer" 
                 style={{flex: 1, width: '100%', border: 'none'}}
               ></iframe>

@@ -355,7 +355,7 @@ const AdminDashboard = () => {
             <h2 style={{marginBottom: '1rem'}}>Job Description</h2>
             {viewJdLink ? (
               <iframe 
-                src={viewJdLink.includes('drive.google.com') ? viewJdLink.replace('/view', '/preview') : viewJdLink} 
+                src={viewJdLink.includes('drive.google.com') ? viewJdLink.replace('/view', '/preview') : (viewJdLink.endsWith('.pdf') ? `https://docs.google.com/viewer?url=${encodeURIComponent(viewJdLink)}&embedded=true` : viewJdLink)} 
                 title="JD Viewer" 
                 style={{flex: 1, width: '100%', border: 'none'}}
               ></iframe>

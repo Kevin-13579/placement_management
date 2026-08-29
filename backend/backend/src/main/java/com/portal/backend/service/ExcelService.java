@@ -28,6 +28,12 @@ public class ExcelService {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rows = sheet.iterator();
 
+            List<Student> existingStudents = studentRepository.findAll();
+            java.util.Set<String> existingRegNos = existingStudents.stream()
+                .map(Student::getRegNo)
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toSet());
+
             List<Student> students = new ArrayList<>();
             int rowNumber = 0;
 
@@ -38,10 +44,16 @@ public class ExcelService {
                     continue; // Skip header
                 }
 
+                String regNo = getStringVal(currentRow.getCell(1));
+                if (regNo == null || existingRegNos.contains(regNo)) {
+                    continue; // Skip duplicates or empty regNo
+                }
+                existingRegNos.add(regNo); // Add to set to prevent duplicates within the same excel file
+
                 Student student = new Student();
                 
                 student.setName(getStringVal(currentRow.getCell(0)));
-                student.setRegNo(getStringVal(currentRow.getCell(1)));
+                student.setRegNo(regNo);
                 student.setDepartment(getStringVal(currentRow.getCell(2)));
                 student.setGender(getStringVal(currentRow.getCell(3)));
                 student.setEmail(getStringVal(currentRow.getCell(4)));

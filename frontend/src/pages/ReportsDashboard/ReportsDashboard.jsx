@@ -34,6 +34,9 @@ const ReportsDashboard = () => {
   const warmCount = companies.filter(c => c.status === 'WARM').length;
   const hotCount = companies.filter(c => c.status === 'HOT').length;
   const completedCount = companies.filter(c => c.status === 'DRIVE_COMPLETED').length;
+  const totalCandidatesPlacedInCompletedDrives = companies
+    .filter(c => c.status === 'DRIVE_COMPLETED')
+    .reduce((sum, c) => sum + (c.candidatesPlaced || 0), 0);
 
   const handleExportAll = () => {
     window.open(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/export`, '_blank');
@@ -46,6 +49,8 @@ const ReportsDashboard = () => {
   const studentsInSelectedCompany = students.filter(
     s => s.placedCompany && s.placedCompany.id.toString() === selectedCompanyId
   );
+
+  const selectedCompanyObj = companies.find(c => c.id.toString() === selectedCompanyId);
 
   return (
     <div className="dashboard-container">
@@ -70,7 +75,7 @@ const ReportsDashboard = () => {
             <li><strong>Cold:</strong> {coldCount}</li>
             <li><strong>Warm:</strong> {warmCount}</li>
             <li><strong>Hot:</strong> {hotCount}</li>
-            <li><strong>Completed:</strong> {completedCount}</li>
+            <li><strong>Completed:</strong> {completedCount} Drives ({totalCandidatesPlacedInCompletedDrives} Placed)</li>
           </ul>
         </div>
       </div>
@@ -91,6 +96,12 @@ const ReportsDashboard = () => {
         </div>
         {selectedCompanyId && (
           <div style={{maxHeight: '400px', overflowY: 'auto'}}>
+            {selectedCompanyObj && selectedCompanyObj.status === 'DRIVE_COMPLETED' && (
+              <div style={{ marginBottom: '1rem', padding: '1rem', background: 'rgba(23, 162, 184, 0.1)', borderRadius: '8px', borderLeft: '4px solid #17a2b8' }}>
+                <h4 style={{ margin: 0, color: '#17a2b8' }}>Drive Completed</h4>
+                <p style={{ margin: '0.5rem 0 0 0' }}>Total Candidates Placed (as reported): <strong>{selectedCompanyObj.candidatesPlaced || 0}</strong></p>
+              </div>
+            )}
             <table className="data-table">
               <thead>
                 <tr>

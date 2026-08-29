@@ -69,6 +69,7 @@ public class CompanyController {
             if (updatedCompany.getContactPerson() != null) company.setContactPerson(updatedCompany.getContactPerson());
             if (updatedCompany.getContactPersonEmail() != null) company.setContactPersonEmail(updatedCompany.getContactPersonEmail());
             if (updatedCompany.getContactPersonMobile() != null) company.setContactPersonMobile(updatedCompany.getContactPersonMobile());
+            if (updatedCompany.getCandidatesPlaced() != null) company.setCandidatesPlaced(updatedCompany.getCandidatesPlaced());
             return ResponseEntity.ok(companyRepository.save(company));
         }).orElse(ResponseEntity.notFound().build());
     }
