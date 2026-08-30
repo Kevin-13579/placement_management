@@ -34,14 +34,41 @@ const StudentDashboard = () => {
       .catch(error => console.error("Error fetching students:", error));
   };
 
+  const [filterName, setFilterName] = useState('');
+  const [filterRegNo, setFilterRegNo] = useState('');
   const [filterDept, setFilterDept] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   
-  let filteredStudents = filterDept ? students.filter(s => s.department === filterDept) : students;
+  let filteredStudents = students.filter(s => {
+    return (!filterName || s.name.toLowerCase().includes(filterName.toLowerCase())) &&
+           (!filterRegNo || s.regNo.toLowerCase().includes(filterRegNo.toLowerCase())) &&
+           (!filterDept || s.department === filterDept);
+  });
+
   if (role === 'STUDENT' && user) {
-    filteredStudents = students.filter(s => s.id === user.id);
+    filteredStudents = filteredStudents.filter(s => s.id === user.id);
   }
+
+  filteredStudents.sort((a, b) => {
+    if (sortConfig.key) {
+      let aVal = a[sortConfig.key] || '';
+      let bVal = b[sortConfig.key] || '';
+      if (typeof aVal === 'string') {
+        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+    return 0;
+  });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
 
   const totalPlaced = students.filter(s => s.placedCompany != null).length;
   const totalUnplaced = students.length - totalPlaced;
@@ -146,9 +173,22 @@ const StudentDashboard = () => {
       </div>
 
       {role !== 'STUDENT' && (
-        <div className="filters-section">
-          <label>Filter by Department: </label>
-          <select value={filterDept} onChange={(e) => setFilterDept(e.target.value)}>
+        <div className="filters-section" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <input 
+            type="text" 
+            placeholder="Filter by Name" 
+            value={filterName} 
+            onChange={e => setFilterName(e.target.value)} 
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+          />
+          <input 
+            type="text" 
+            placeholder="Filter by Reg No" 
+            value={filterRegNo} 
+            onChange={e => setFilterRegNo(e.target.value)} 
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+          />
+          <select value={filterDept} onChange={(e) => setFilterDept(e.target.value)} style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}>
             <option value="">All Departments</option>
             <option value="CSE">CSE</option>
             <option value="ECE">ECE</option>
@@ -162,18 +202,21 @@ const StudentDashboard = () => {
         <table className="student-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Reg No</th>
-              <th>Department</th>
-              <th>ATS Score</th>
+              <th>Sl No</th>
+              <th onClick={() => handleSort('name')} style={{cursor: 'pointer'}}>Name {sortConfig.key === 'name' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('regNo')} style={{cursor: 'pointer'}}>Reg No {sortConfig.key === 'regNo' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('department')} style={{cursor: 'pointer'}}>Department {sortConfig.key === 'department' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('atsScore')} style={{cursor: 'pointer'}}>ATS Score {sortConfig.key === 'atsScore' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
               <th>Status</th>
-              <th>CTC (LPA)</th>
+              <th onClick={() => handleSort('ctcInLpa')} style={{cursor: 'pointer'}}>CTC (LPA) {sortConfig.key === 'ctcInLpa' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('createdAt')} style={{cursor: 'pointer'}}>Date Added {sortConfig.key === 'createdAt' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
               {(role === 'MANAGER' || role === 'ADMIN' || role === 'LEAD' || role === 'STUDENT') && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
-            {filteredStudents.map(student => (
+            {filteredStudents.map((student, index) => (
               <tr key={student.id}>
+                <td>{index + 1}</td>
                 {editingId === student.id ? (
                   <>
                     <td><input name="name" value={editFormData.name || ''} onChange={handleEditChange} style={{width:'80px'}}/></td>
@@ -181,6 +224,10 @@ const StudentDashboard = () => {
                     <td><input name="department" value={editFormData.department || ''} onChange={handleEditChange} style={{width:'80px'}}/></td>
                     <td>{student.atsScore || 0}</td>
                     <td>{student.placedCompany != null ? 'Placed' : 'YTBS'}</td>
+                    <td>
+                      <input type="number" step="0.1" name="ctcInLpa" value={editFormData.ctcInLpa || ''} onChange={handleEditChange} style={{width:'60px'}}/>
+                    </td>
+                    <td>{student.createdAt ? new Date(student.createdAt).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleResumeUpload(e, student.id)} style={{width: '120px', fontSize: '0.8rem'}}/>
                     </td>
@@ -203,6 +250,7 @@ const StudentDashboard = () => {
                     </td>
                     <td>{student.placedCompany != null ? 'Placed' : 'YTBS'}</td>
                     <td>{student.ctcInLpa || '-'}</td>
+                    <td>{student.createdAt ? new Date(student.createdAt).toLocaleDateString() : 'N/A'}</td>
                     {(role === 'MANAGER' || role === 'ADMIN' || role === 'LEAD' || role === 'STUDENT') && (
                       <td>
                         {role === 'STUDENT' && (

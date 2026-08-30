@@ -9,6 +9,11 @@ const CompanyDashboard = () => {
   const [companies, setCompanies] = useState([]);
   const [students, setStudents] = useState([]);
 
+  const [filterName, setFilterName] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [filterSize, setFilterSize] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
   const [newCompanyName, setNewCompanyName] = useState('');
   const [newLocation, setNewLocation] = useState('');
   const [newCompanySize, setNewCompanySize] = useState('');
@@ -109,6 +114,36 @@ const CompanyDashboard = () => {
 
   const topStudents = students.filter(s => s.atsScore >= 91).sort((a, b) => b.atsScore - a.atsScore);
 
+  let filteredCompanies = companies.filter(c => {
+    return (!filterName || c.name.toLowerCase().includes(filterName.toLowerCase())) &&
+           (!filterLocation || (c.location && c.location.toLowerCase().includes(filterLocation.toLowerCase()))) &&
+           (!filterSize || (c.companySize && c.companySize.toLowerCase().includes(filterSize.toLowerCase())));
+  });
+
+  filteredCompanies.sort((a, b) => {
+    if (sortConfig.key) {
+      let aVal = a[sortConfig.key] || '';
+      let bVal = b[sortConfig.key] || '';
+      if (typeof aVal === 'string') {
+        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+    return 0;
+  });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const getPlacedCount = (companyId) => students.filter(s => s.placedCompany && s.placedCompany.id === companyId).length;
+  const getPlacedStudentsDetails = (companyId) => {
+    const placed = students.filter(s => s.placedCompany && s.placedCompany.id === companyId);
+    return placed.map(s => s.name).join(', ') || 'None';
+  };
+
   return (
     <div className="dashboard-container">
       
@@ -164,44 +199,88 @@ const CompanyDashboard = () => {
       <div style={{marginBottom: '1rem'}}>
         <h1>Company Directory & Matches</h1>
       </div>
+
+      <div className="filters-section" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <input 
+          type="text" 
+          placeholder="Filter by Name" 
+          value={filterName} 
+          onChange={e => setFilterName(e.target.value)} 
+          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <input 
+          type="text" 
+          placeholder="Filter by Location" 
+          value={filterLocation} 
+          onChange={e => setFilterLocation(e.target.value)} 
+          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <input 
+          type="text" 
+          placeholder="Filter by Size" 
+          value={filterSize} 
+          onChange={e => setFilterSize(e.target.value)} 
+          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+      </div>
       
-      <table className="student-table">
-        <thead>
-          <tr>
-            <th>Company Name</th>
-            <th>Location</th>
-            <th>Size</th>
-            <th>Contact Person</th>
-            <th>Email</th>
-            <th>Mobile</th>
-            <th>Approval</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map(c => (
-            <tr key={c.id}>
-              <td>{c.name}</td>
-              <td>{c.location || 'N/A'}</td>
-              <td>{c.companySize || 'N/A'}</td>
-              <td>{c.contactPerson || 'N/A'}</td>
-              <td>{c.contactPersonEmail || 'N/A'}</td>
-              <td>{c.contactPersonMobile || 'N/A'}</td>
-              <td>
-                <span className={`status-badge ${c.approved ? 'status-hot' : 'status-cold'}`}>
-                  {c.approved ? 'Approved' : 'Pending'}
-                </span>
-              </td>
-              <td>
-                <button className="btn-primary" onClick={() => handleMatchClick(c)} disabled={!c.approved} style={{opacity: c.approved ? 1 : 0.5}}>
-                  View Top Matches
-                </button>
-              </td>
+      <div style={{ overflowX: 'auto' }}>
+        <table className="student-table" style={{ whiteSpace: 'nowrap' }}>
+          <thead>
+            <tr>
+              <th>Sl No</th>
+              <th onClick={() => handleSort('name')} style={{cursor: 'pointer'}}>Company Name {sortConfig.key === 'name' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('role')} style={{cursor: 'pointer'}}>Role {sortConfig.key === 'role' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('location')} style={{cursor: 'pointer'}}>Location {sortConfig.key === 'location' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('companySize')} style={{cursor: 'pointer'}}>Size {sortConfig.key === 'companySize' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th onClick={() => handleSort('ctcInLpa')} style={{cursor: 'pointer'}}>CTC (LPA) {sortConfig.key === 'ctcInLpa' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th>Placed Count</th>
+              <th>Placed Students</th>
+              <th>JD Summary</th>
+              <th>Careers Link</th>
+              <th>JD Link</th>
+              <th>Contact Person</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th onClick={() => handleSort('status')} style={{cursor: 'pointer'}}>Status {sortConfig.key === 'status' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}</th>
+              <th>Approval</th>
+              <th>Action</th>
             </tr>
-          ))}
-          {companies.length === 0 && <tr><td colSpan="8" style={{textAlign:'center'}}>No companies found.</td></tr>}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredCompanies.map((c, index) => (
+              <tr key={c.id}>
+                <td>{index + 1}</td>
+                <td>{c.name}</td>
+                <td>{c.role || 'N/A'}</td>
+                <td>{c.location || 'N/A'}</td>
+                <td>{c.companySize || 'N/A'}</td>
+                <td>{c.ctcInLpa || 'N/A'}</td>
+                <td>{getPlacedCount(c.id)}</td>
+                <td style={{maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis'}} title={getPlacedStudentsDetails(c.id)}>{getPlacedStudentsDetails(c.id)}</td>
+                <td style={{maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis'}} title={c.jdSummary}>{c.jdSummary || 'N/A'}</td>
+                <td>{c.careersLink ? <a href={c.careersLink} target="_blank" rel="noreferrer">Link</a> : 'N/A'}</td>
+                <td>{c.jdLink ? <a href={c.jdLink} target="_blank" rel="noreferrer">Link</a> : 'N/A'}</td>
+                <td>{c.contactPerson || 'N/A'}</td>
+                <td>{c.contactPersonEmail || 'N/A'}</td>
+                <td>{c.contactPersonMobile || 'N/A'}</td>
+                <td>{c.status}</td>
+                <td>
+                  <span className={`status-badge ${c.approved ? 'status-hot' : 'status-cold'}`}>
+                    {c.approved ? 'Approved' : 'Pending'}
+                  </span>
+                </td>
+                <td>
+                  <button className="btn-primary" onClick={() => handleMatchClick(c)} disabled={!c.approved} style={{opacity: c.approved ? 1 : 0.5}}>
+                    View Top Matches
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filteredCompanies.length === 0 && <tr><td colSpan="17" style={{textAlign:'center'}}>No companies found.</td></tr>}
+          </tbody>
+        </table>
+      </div>
 
       {showModal && (
         <div className="modal-overlay">
