@@ -33,6 +33,11 @@ public class Company {
     private Status status; // COLD, WARM, HOT, DRIVE_COMPLETED
     
     private String jdLink;
+    @Column(columnDefinition="TEXT")
+    private String jdSummary;
+    private String careersLink;
+    private String role;
+    
     private Double ctcInLpa;
     private Integer candidatesPlaced;
     

@@ -10,6 +10,17 @@ const PlacementTeamDashboard = () => {
   // Filters for table
   const [ctcFilter, setCtcFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [sizeFilter, setSizeFilter] = useState('');
+
+  // Sorting for table
+  const [sortField, setSortField] = useState('ctcInLpa');
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  // Kanban Modal State
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   // Edit Modal State
   const [showEditModal, setShowEditModal] = useState(false);
@@ -102,10 +113,15 @@ const PlacementTeamDashboard = () => {
     }
   };
 
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status);
+    setShowStatusModal(true);
+  };
+
   const renderKanbanColumn = (title, status) => {
     const colCompanies = companies.filter(c => c.status === status);
     return (
-      <div className="kanban-col">
+      <div className="kanban-col" onClick={() => handleStatusClick(status)} style={{cursor: 'pointer'}}>
         <h3>{title} <span style={{fontSize:'0.8rem', color:'gray'}}>({colCompanies.length})</span></h3>
         {colCompanies.map(c => (
           <div key={c.id} className="kanban-card">
@@ -118,11 +134,39 @@ const PlacementTeamDashboard = () => {
     );
   };
 
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
   const filteredCompanies = companies.filter(c => {
     const matchStatus = statusFilter ? c.status === statusFilter : true;
     const matchCtc = ctcFilter ? (c.ctcInLpa && parseFloat(c.ctcInLpa) <= parseFloat(ctcFilter)) : true;
-    return matchStatus && matchCtc;
-  }).sort((a, b) => (parseFloat(b.ctcInLpa) || 0) - (parseFloat(a.ctcInLpa) || 0));
+    const matchName = nameFilter ? c.name?.toLowerCase().includes(nameFilter.toLowerCase()) : true;
+    const matchLocation = locationFilter ? c.location?.toLowerCase().includes(locationFilter.toLowerCase()) : true;
+    const matchSize = sizeFilter ? c.companySize?.toLowerCase().includes(sizeFilter.toLowerCase()) : true;
+    
+    return matchStatus && matchCtc && matchName && matchLocation && matchSize;
+  }).sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (sortField === 'ctcInLpa') {
+      valA = parseFloat(valA) || 0;
+      valB = parseFloat(valB) || 0;
+    } else {
+      valA = (valA || '').toString().toLowerCase();
+      valB = (valB || '').toString().toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="dashboard-container split-layout">
@@ -136,10 +180,28 @@ const PlacementTeamDashboard = () => {
         </div>
         
         <h2>All Companies Directory</h2>
-        <div className="filters-bar">
+        <div className="filters-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           <input 
             type="text" 
-            placeholder="Filter by CTC (e.g. 12)" 
+            placeholder="Name..." 
+            value={nameFilter} 
+            onChange={(e) => setNameFilter(e.target.value)} 
+          />
+          <input 
+            type="text" 
+            placeholder="Location..." 
+            value={locationFilter} 
+            onChange={(e) => setLocationFilter(e.target.value)} 
+          />
+          <input 
+            type="text" 
+            placeholder="Size..." 
+            value={sizeFilter} 
+            onChange={(e) => setSizeFilter(e.target.value)} 
+          />
+          <input 
+            type="text" 
+            placeholder="Max CTC..." 
             value={ctcFilter} 
             onChange={(e) => setCtcFilter(e.target.value)} 
           />
@@ -156,17 +218,19 @@ const PlacementTeamDashboard = () => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Company Name</th>
-                <th>Location</th>
-                <th>Size</th>
-                <th>CTC (LPA)</th>
+                <th>Sl No</th>
+                <th onClick={() => handleSort('name')} style={{cursor:'pointer'}}>Company Name {sortField === 'name' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('location')} style={{cursor:'pointer'}}>Location {sortField === 'location' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('companySize')} style={{cursor:'pointer'}}>Size {sortField === 'companySize' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('ctcInLpa')} style={{cursor:'pointer'}}>CTC (LPA) {sortField === 'ctcInLpa' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCompanies.map(c => (
+              {filteredCompanies.map((c, index) => (
                 <tr key={c.id}>
+                  <td>{index + 1}</td>
                   <td>{c.name}</td>
                   <td>{c.location || 'N/A'}</td>
                   <td>{c.companySize || 'N/A'}</td>
@@ -188,7 +252,7 @@ const PlacementTeamDashboard = () => {
               ))}
               {filteredCompanies.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{textAlign:'center'}}>No companies match criteria.</td>
+                  <td colSpan="7" style={{textAlign:'center'}}>No companies match criteria.</td>
                 </tr>
               )}
             </tbody>
@@ -279,6 +343,48 @@ const PlacementTeamDashboard = () => {
                 <button type="submit" className="btn-primary">Save Changes</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showStatusModal && (
+        <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
+          <div className="modal-content" style={{maxWidth: '800px', width: '90%'}} onClick={e => e.stopPropagation()}>
+            <span className="close-btn" onClick={() => setShowStatusModal(false)}>&times;</span>
+            <h2 style={{marginBottom: '1rem'}}>Companies in {selectedStatus} Status</h2>
+            <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Sl No</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>CTC (LPA)</th>
+                    <th>Size</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {companies.filter(c => c.status === selectedStatus).map((c, idx) => (
+                    <tr key={c.id}>
+                      <td>{idx + 1}</td>
+                      <td>{c.name}</td>
+                      <td>{c.location || 'N/A'}</td>
+                      <td>{c.ctcInLpa || 'N/A'}</td>
+                      <td>{c.companySize || 'N/A'}</td>
+                      <td>
+                        <button className="btn-primary" onClick={() => {setShowStatusModal(false); openEditModal(c);}} style={{padding: '0.25rem 0.5rem', fontSize: '0.85rem'}}>View/Edit</button>
+                      </td>
+                    </tr>
+                  ))}
+                  {companies.filter(c => c.status === selectedStatus).length === 0 && (
+                    <tr>
+                      <td colSpan="6" style={{textAlign: 'center'}}>No companies found in this status.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

@@ -42,6 +42,20 @@ public class CompanyController {
         }
     }
 
+    @Autowired
+    private com.portal.backend.service.ExcelService excelService;
+
+    @PostMapping("/upload-bulk")
+    public ResponseEntity<?> uploadCompaniesExcel(@RequestParam("file") MultipartFile file) {
+        try {
+            excelService.saveCompaniesFromExcel(file);
+            return ResponseEntity.ok("Companies uploaded and saved successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error uploading bulk companies: " + e.getMessage());
+        }
+    }
+
     @PostMapping
     public Company createCompany(@RequestBody Company company) {
         if (company.getStatus() == null) {

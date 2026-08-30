@@ -1,7 +1,9 @@
 package com.portal.backend.service;
 
 import com.portal.backend.model.Student;
+import com.portal.backend.model.Company;
 import com.portal.backend.repository.StudentRepository;
+import com.portal.backend.repository.CompanyRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class ExcelService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Autowired
     private GeminiAtsService geminiAtsService;
@@ -39,9 +44,9 @@ public class ExcelService {
 
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
-                if (rowNumber == 0) {
+                if (rowNumber < 3) { // Skip first 3 rows (title, empty, headers)
                     rowNumber++;
-                    continue; // Skip header
+                    continue; 
                 }
 
                 String regNo = getStringVal(currentRow.getCell(1));
@@ -96,6 +101,58 @@ public class ExcelService {
             studentRepository.saveAll(students);
         } catch (Exception e) {
             throw new RuntimeException("Failed to store excel data: " + e.getMessage());
+        }
+    }
+
+    public void saveCompaniesFromExcel(MultipartFile file) {
+        try {
+            InputStream is = file.getInputStream();
+            Workbook workbook = WorkbookFactory.create(is);
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rows = sheet.iterator();
+
+            List<Company> companies = new ArrayList<>();
+            int rowNumber = 0;
+
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                if (rowNumber < 3) { // Skip first 3 rows (title, empty, headers)
+                    rowNumber++;
+                    continue;
+                }
+
+                String companyName = getStringVal(currentRow.getCell(1));
+                if (companyName == null || companyName.trim().isEmpty()) {
+                    continue;
+                }
+
+                Company company = new Company();
+                company.setName(companyName);
+                company.setRole(getStringVal(currentRow.getCell(2)));
+                
+                Double ctc = getNumericVal(currentRow.getCell(3));
+                if (ctc != null) company.setCtcInLpa(ctc);
+
+                company.setLocation(getStringVal(currentRow.getCell(4)));
+                
+                // Ignore indices 5, 6, 7, 8 as requested
+                
+                company.setJdSummary(getStringVal(currentRow.getCell(9)));
+                company.setJdLink(getStringVal(currentRow.getCell(10)));
+                company.setCareersLink(getStringVal(currentRow.getCell(11)));
+                company.setContactPersonEmail(getStringVal(currentRow.getCell(12)));
+                company.setContactPersonMobile(getStringVal(currentRow.getCell(13)));
+                
+                // Set defaults
+                company.setStatus(Company.Status.COLD);
+                company.setApproved(true); // Assuming bulk import means they are approved
+
+                companies.add(company);
+            }
+            workbook.close();
+            companyRepository.saveAll(companies);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to store company excel data: " + e.getMessage());
         }
     }
 

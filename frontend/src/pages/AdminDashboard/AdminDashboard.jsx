@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   // Data States
   const [users, setUsers] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [students, setStudents] = useState([]);
   
   // Form States for New User
   const [newUsername, setNewUsername] = useState('');
@@ -25,6 +26,7 @@ const AdminDashboard = () => {
   
   // File State
   const [file, setFile] = useState(null);
+  const [companyFile, setCompanyFile] = useState(null);
 
   // View JD Modal State
   const [viewJdLink, setViewJdLink] = useState(null);
@@ -32,6 +34,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUsers();
     fetchCompanies();
+    fetchStudents();
   }, []);
 
   const fetchUsers = async () => {
@@ -49,6 +52,16 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies`);
       const data = await res.json();
       setCompanies(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchStudents = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students`);
+      const data = await res.json();
+      setStudents(data);
     } catch (e) {
       console.error(e);
     }
@@ -156,9 +169,27 @@ const AdminDashboard = () => {
         body: formData
       });
       alert('Upload successful!');
+      fetchStudents();
     } catch (e) {
       console.error(e);
       alert('Upload failed!');
+    }
+  };
+
+  const handleCompanyFileUpload = async () => {
+    if (!companyFile) return;
+    const formData = new FormData();
+    formData.append("file", companyFile);
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/upload-bulk`, {
+        method: 'POST',
+        body: formData
+      });
+      alert('Company bulk upload successful!');
+      fetchCompanies();
+    } catch (e) {
+      console.error(e);
+      alert('Company bulk upload failed!');
     }
   };
 
@@ -180,10 +211,37 @@ const AdminDashboard = () => {
 
   const pendingCompanies = companies.filter(c => !c.approved);
 
+  const totalStudents = students.length;
+  const placedStudents = students.filter(s => s.placedCompany != null).length;
+  const unplacedStudents = totalStudents - placedStudents;
+  const placedStudentsWithCtc = students.filter(s => s.placedCompany != null && s.ctcInLpa != null);
+  const avgCtc = placedStudentsWithCtc.length > 0 
+    ? (placedStudentsWithCtc.reduce((sum, s) => sum + parseFloat(s.ctcInLpa), 0) / placedStudentsWithCtc.length).toFixed(2) 
+    : 0;
+
   return (
     <div className="dashboard-container">
       <h1>Admin Control Panel</h1>
       
+      <div className="admin-stats-row" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className="admin-tab-card" style={{ flex: 1, cursor: 'default' }}>
+          <h3>Total Students</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{totalStudents}</p>
+        </div>
+        <div className="admin-tab-card" style={{ flex: 1, cursor: 'default', borderLeft: '4px solid #28a745' }}>
+          <h3>Placed Students</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{placedStudents}</p>
+        </div>
+        <div className="admin-tab-card" style={{ flex: 1, cursor: 'default', borderLeft: '4px solid #dc3545' }}>
+          <h3>Unplaced Students</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{unplacedStudents}</p>
+        </div>
+        <div className="admin-tab-card" style={{ flex: 1, cursor: 'default', borderLeft: '4px solid #17a2b8' }}>
+          <h3>Average CTC</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{avgCtc} LPA</p>
+        </div>
+      </div>
+
       <div className="admin-grid">
         <div className={`admin-tab-card ${activeTab === 'manage-users' ? 'active-card' : ''}`} onClick={() => setActiveTab('manage-users')}>
           <h2>Team Management</h2>
@@ -337,6 +395,12 @@ const AdminDashboard = () => {
               <button onClick={handleFileUpload} className="btn-primary">Upload Excel</button>
             </div>
             
+            <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Bulk Import Companies</h3>
+            <div className="admin-action-bar" style={{ marginBottom: '1.5rem' }}>
+              <input type="file" onChange={e => setCompanyFile(e.target.files[0])} className="form-input" />
+              <button onClick={handleCompanyFileUpload} className="btn-primary">Upload Companies Excel</button>
+            </div>
+
             <div style={{borderTop: '1px solid #ddd', paddingTop: '1.5rem'}}>
               <h3>Compute ATS Scores (Gemini AI)</h3>
               <p style={{color: 'var(--text-light)', marginBottom: '1rem', fontSize: '0.9rem'}}>Automatically analyze un-scored resumes via Gemini and assign an ATS matching score.</p>

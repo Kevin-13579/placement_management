@@ -5,6 +5,15 @@ const ReportsDashboard = () => {
   const [students, setStudents] = useState([]);
   const [companies, setCompanies] = useState([]);
 
+  // Student Filters
+  const [nameFilter, setNameFilter] = useState('');
+  const [regNoFilter, setRegNoFilter] = useState('');
+  const [deptFilter, setDeptFilter] = useState('');
+
+  // Student Sorting
+  const [sortField, setSortField] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,6 +60,37 @@ const ReportsDashboard = () => {
   );
 
   const selectedCompanyObj = companies.find(c => c.id.toString() === selectedCompanyId);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const filteredStudentsOverview = students.filter(s => {
+    const matchName = nameFilter ? s.name?.toLowerCase().includes(nameFilter.toLowerCase()) : true;
+    const matchRegNo = regNoFilter ? s.regNo?.toLowerCase().includes(regNoFilter.toLowerCase()) : true;
+    const matchDept = deptFilter ? s.department?.toLowerCase().includes(deptFilter.toLowerCase()) : true;
+    return matchName && matchRegNo && matchDept;
+  }).sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (sortField === 'ctcInLpa' || sortField === 'atsScore') {
+      valA = parseFloat(valA) || 0;
+      valB = parseFloat(valB) || 0;
+    } else {
+      valA = (valA || '').toString().toLowerCase();
+      valB = (valB || '').toString().toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="dashboard-container">
@@ -131,25 +171,58 @@ const ReportsDashboard = () => {
 
       <div className="card" style={{marginTop: '2rem', marginBottom: '2rem'}}>
         <h2>Students Overview</h2>
+        
+        <div className="filters-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+          <input 
+            type="text" 
+            placeholder="Name..." 
+            value={nameFilter} 
+            onChange={(e) => setNameFilter(e.target.value)} 
+          />
+          <input 
+            type="text" 
+            placeholder="Register No..." 
+            value={regNoFilter} 
+            onChange={(e) => setRegNoFilter(e.target.value)} 
+          />
+          <input 
+            type="text" 
+            placeholder="Department..." 
+            value={deptFilter} 
+            onChange={(e) => setDeptFilter(e.target.value)} 
+          />
+        </div>
+
         <div style={{maxHeight: '400px', overflowY: 'auto'}}>
           <table className="data-table">
             <thead>
               <tr>
-                <th>Reg No</th>
-                <th>Name</th>
-                <th>Department</th>
+                <th>Sl No</th>
+                <th onClick={() => handleSort('regNo')} style={{cursor:'pointer'}}>Reg No {sortField === 'regNo' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('name')} style={{cursor:'pointer'}}>Name {sortField === 'name' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('department')} style={{cursor:'pointer'}}>Department {sortField === 'department' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('atsScore')} style={{cursor:'pointer'}}>ATS Score {sortField === 'atsScore' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('ctcInLpa')} style={{cursor:'pointer'}}>CTC (LPA) {sortField === 'ctcInLpa' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {students.map(s => (
+              {filteredStudentsOverview.map((s, index) => (
                 <tr key={s.id}>
+                  <td>{index + 1}</td>
                   <td>{s.regNo}</td>
                   <td>{s.name}</td>
                   <td>{s.department}</td>
+                  <td>{s.atsScore || 'N/A'}</td>
+                  <td>{s.ctcInLpa ? `${s.ctcInLpa} LPA` : 'N/A'}</td>
                   <td><span className={`status-badge ${s.placedCompany ? 'status-hot' : 'status-cold'}`}>{s.placedCompany ? 'Placed' : 'Searching'}</span></td>
                 </tr>
               ))}
+              {filteredStudentsOverview.length === 0 && (
+                <tr>
+                  <td colSpan="7" style={{textAlign:'center'}}>No students match criteria.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
