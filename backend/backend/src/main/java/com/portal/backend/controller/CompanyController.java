@@ -115,4 +115,10 @@ public class CompanyController {
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/bulk-delete")
+    public ResponseEntity<?> deleteAllCompanies() {
+        companyRepository.deleteAll();
+        return ResponseEntity.ok(java.util.Map.of("message", "All companies deleted successfully"));
+    }
 }

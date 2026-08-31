@@ -34,10 +34,9 @@ public class ExcelService {
             Iterator<Row> rows = sheet.iterator();
 
             List<Student> existingStudents = studentRepository.findAll();
-            java.util.Set<String> existingRegNos = existingStudents.stream()
-                .map(Student::getRegNo)
-                .filter(java.util.Objects::nonNull)
-                .collect(java.util.stream.Collectors.toSet());
+            java.util.Map<String, Student> existingRegNoMap = existingStudents.stream()
+                .filter(s -> s.getRegNo() != null)
+                .collect(java.util.stream.Collectors.toMap(Student::getRegNo, s -> s, (s1, s2) -> s1));
 
             List<Student> students = new ArrayList<>();
             int rowNumber = 0;
@@ -50,13 +49,17 @@ public class ExcelService {
                 }
 
                 String regNo = getStringVal(currentRow.getCell(1));
-                if (regNo == null || existingRegNos.contains(regNo)) {
-                    continue; // Skip duplicates or empty regNo
+                if (regNo == null || regNo.trim().isEmpty()) {
+                    continue; // Skip empty regNo
                 }
-                existingRegNos.add(regNo); // Add to set to prevent duplicates within the same excel file
 
-                Student student = new Student();
+                Student student = existingRegNoMap.get(regNo);
+                if (student == null) {
+                    student = new Student();
+                }
                 
+                existingRegNoMap.put(regNo, student); // Add to map to prevent duplicates within the same excel file
+
                 student.setName(getStringVal(currentRow.getCell(0)));
                 student.setRegNo(regNo);
                 student.setDepartment(getStringVal(currentRow.getCell(2)));
@@ -91,9 +94,11 @@ public class ExcelService {
                 student.setPortfolio(getStringVal(currentRow.getCell(20)));
                 student.setMobileNumber(getStringVal(currentRow.getCell(21)));
 
-                // Calculate and set Mock ATS Score
-                int mockAtsScore = geminiAtsService.calculateAtsScore(student.getResumeDriveLink(), "Default Job Description");
-                student.setAtsScore(mockAtsScore);
+                // Calculate and set Mock ATS Score only if not already set or if it's a new student
+                if (student.getAtsScore() == null || student.getAtsScore() == 0) {
+                    int mockAtsScore = geminiAtsService.calculateAtsScore(student.getResumeDriveLink(), "Default Job Description");
+                    student.setAtsScore(mockAtsScore);
+                }
 
                 students.add(student);
             }

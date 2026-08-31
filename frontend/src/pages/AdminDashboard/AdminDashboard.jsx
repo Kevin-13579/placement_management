@@ -408,6 +408,26 @@ const AdminDashboard = () => {
                 {computingAts ? 'Computing...' : 'Compute Pending ATS Scores'}
               </button>
             </div>
+
+            <div style={{borderTop: '1px solid #ddd', paddingTop: '1.5rem', marginTop: '1.5rem'}}>
+              <h3 style={{ color: '#dc3545' }}>Danger Zone</h3>
+              <p style={{color: 'var(--text-light)', marginBottom: '1rem', fontSize: '0.9rem'}}>Delete all students and companies data from the database. This action is irreversible.</p>
+              <button onClick={async () => {
+                if (!window.confirm("CRITICAL WARNING: Are you sure you want to delete ALL students and companies data? This action is irreversible!")) return;
+                try {
+                  await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/students/bulk-delete`, { method: 'DELETE' });
+                  await fetch(`${import.meta.env.VITE_API_URL || 'https://YOUR_RENDER_APP_NAME.onrender.com'}/api/companies/bulk-delete`, { method: 'DELETE' });
+                  alert('All students and companies data have been successfully deleted.');
+                  fetchStudents();
+                  fetchCompanies();
+                } catch (e) {
+                  console.error(e);
+                  alert('Failed to delete all data!');
+                }
+              }} className="btn-primary" style={{background: '#dc3545', border: 'none'}}>
+                Delete All Data
+              </button>
+            </div>
           </div>
         )}
       </div>

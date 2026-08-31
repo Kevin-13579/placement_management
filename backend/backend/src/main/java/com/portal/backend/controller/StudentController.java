@@ -128,6 +128,12 @@ public class StudentController {
         return studentRepository.findByDeletedTrue();
     }
 
+    @DeleteMapping("/bulk-delete")
+    public ResponseEntity<?> deleteAllStudents() {
+        studentRepository.deleteAll();
+        return ResponseEntity.ok(java.util.Map.of("message", "All students deleted successfully"));
+    }
+
     @GetMapping("/export")
     public ResponseEntity<String> exportStudentsToCSV(@RequestParam(required = false) Boolean placedOnly) {
         List<Student> students = studentRepository.findByDeletedFalse();
