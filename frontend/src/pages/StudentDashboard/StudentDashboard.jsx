@@ -288,46 +288,59 @@ const StudentDashboard = () => {
 
       {viewStudent && (
         <div className="modal-overlay" onClick={() => setViewStudent(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content a4-resume-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setViewStudent(null)}>&times;</button>
-            <h2>{viewStudent.name}'s Profile</h2>
-            <div className="student-details-grid">
-              <div>
-                <p><strong>Reg No:</strong> {viewStudent.regNo}</p>
-                <p><strong>Department:</strong> {viewStudent.department}</p>
-                <p><strong>Gender:</strong> {viewStudent.gender}</p>
-                <p><strong>Email:</strong> {viewStudent.email}</p>
-                <p><strong>Mobile:</strong> {viewStudent.mobileNumber}</p>
-                <p><strong>Resident Type:</strong> {viewStudent.residentType}</p>
+            <div className="a4-container">
+              {/* Left sidebar */}
+              <div className="a4-sidebar">
+                 {viewStudent.photoDriveLink && (
+                   <img 
+                     src={viewStudent.photoDriveLink.includes('drive.google.com') ? `https://drive.google.com/uc?export=view&id=${viewStudent.photoDriveLink.match(/\\/d\\/([a-zA-Z0-9_-]+)/)?.[1]}` : viewStudent.photoDriveLink} 
+                     alt="Profile" 
+                     className="a4-profile-pic" 
+                   />
+                 )}
+                 <h2 className="a4-name">{viewStudent.name}</h2>
+                 <p className="a4-department">{viewStudent.department}</p>
+                 <div className="a4-details">
+                    <p><strong>Reg No:</strong> {viewStudent.regNo}</p>
+                    <p><strong>Email:</strong> {viewStudent.email}</p>
+                    <p><strong>Mobile:</strong> {viewStudent.mobileNumber}</p>
+                    <p><strong>Gender:</strong> {viewStudent.gender}</p>
+                    <p><strong>Resident Type:</strong> {viewStudent.residentType}</p>
+                 </div>
+                 <div className="a4-education">
+                    <h3>Education</h3>
+                    <p><strong>SSLC:</strong> {viewStudent.sslcPercentage}% ({viewStudent.sslcYear})</p>
+                    <p><strong>HSC:</strong> {viewStudent.hscPercentage}% ({viewStudent.hscYear})</p>
+                    <p><strong>UG:</strong> {viewStudent.ugPercentage}% ({viewStudent.ugYear})</p>
+                    {viewStudent.pgPercentage != null && <p><strong>PG:</strong> {viewStudent.pgPercentage}% ({viewStudent.pgYear})</p>}
+                    <p><strong>Graduation:</strong> {viewStudent.graduationYear}</p>
+                 </div>
+                 <div className="a4-links">
+                    <h3>Links</h3>
+                    {viewStudent.githubId && <a href={viewStudent.githubId} target="_blank" rel="noreferrer">GitHub</a>}
+                    {viewStudent.linkedinUrl && <a href={viewStudent.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>}
+                    {viewStudent.portfolio && <a href={viewStudent.portfolio} target="_blank" rel="noreferrer">Portfolio</a>}
+                 </div>
               </div>
-              <div>
-                <p><strong>SSLC (%):</strong> {viewStudent.sslcPercentage}% ({viewStudent.sslcYear})</p>
-                <p><strong>HSC (%):</strong> {viewStudent.hscPercentage}% ({viewStudent.hscYear})</p>
-                <p><strong>UG (%):</strong> {viewStudent.ugPercentage}% ({viewStudent.ugYear})</p>
-                <p><strong>PG (%):</strong> {viewStudent.pgPercentage ? `${viewStudent.pgPercentage}% (${viewStudent.pgYear})` : 'N/A'}</p>
-                <p><strong>Graduation Year:</strong> {viewStudent.graduationYear}</p>
-              </div>
-            </div>
-            
-            <div style={{marginBottom: '1rem'}}>
-              <a href={viewStudent.githubId} target="_blank" rel="noreferrer" style={{marginRight:'1rem'}}>GitHub</a>
-              <a href={viewStudent.linkedinUrl} target="_blank" rel="noreferrer" style={{marginRight:'1rem'}}>LinkedIn</a>
-              {viewStudent.portfolio && <a href={viewStudent.portfolio} target="_blank" rel="noreferrer">Portfolio</a>}
-            </div>
-
-            {viewStudent.resumeDriveLink ? (
-              <div>
+              
+              {/* Main content - Resume Preview */}
+              <div className="a4-main-content">
                 <h3>Resume</h3>
-                {/* Embedded Document Viewer using iframe */}
-                <iframe 
-                  src={viewStudent.resumeDriveLink.includes('drive.google.com') ? viewStudent.resumeDriveLink.replace('/view', '/preview') : viewStudent.resumeDriveLink} 
-                  title="Resume Viewer" 
-                  className="doc-viewer"
-                ></iframe>
+                {viewStudent.resumeDriveLink ? (
+                  <iframe 
+                    src={viewStudent.resumeDriveLink.includes('drive.google.com') ? viewStudent.resumeDriveLink.replace('/view', '/preview') : viewStudent.resumeDriveLink} 
+                    title="Resume Viewer" 
+                    className="doc-viewer a4-iframe"
+                  ></iframe>
+                ) : (
+                  <div className="no-resume">
+                    <p>No Resume Link Provided.</p>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p>No Resume Link Provided.</p>
-            )}
+            </div>
           </div>
         </div>
       )}
