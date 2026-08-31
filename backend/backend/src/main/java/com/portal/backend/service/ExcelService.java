@@ -43,14 +43,17 @@ public class ExcelService {
 
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
-                if (rowNumber < 3) { // Skip first 3 rows (title, empty, headers)
-                    rowNumber++;
-                    continue; 
-                }
-
+                
                 String regNo = getStringVal(currentRow.getCell(1));
+                String name = getStringVal(currentRow.getCell(0));
+
                 if (regNo == null || regNo.trim().isEmpty()) {
                     continue; // Skip empty regNo
+                }
+
+                // Header detection heuristic
+                if (regNo.toLowerCase().contains("reg") || (name != null && name.toLowerCase().contains("name"))) {
+                    continue;
                 }
 
                 Student student = existingRegNoMap.get(regNo);
@@ -121,13 +124,14 @@ public class ExcelService {
 
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
-                if (rowNumber < 3) { // Skip first 3 rows (title, empty, headers)
-                    rowNumber++;
-                    continue;
-                }
 
                 String companyName = getStringVal(currentRow.getCell(1));
                 if (companyName == null || companyName.trim().isEmpty()) {
+                    continue;
+                }
+
+                // Header detection heuristic
+                if (companyName.toLowerCase().contains("company") || companyName.toLowerCase().contains("name")) {
                     continue;
                 }
 
