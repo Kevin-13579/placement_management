@@ -295,7 +295,7 @@ const StudentDashboard = () => {
               <div className="a4-sidebar">
                  {viewStudent.photoDriveLink && (
                    <img 
-                     src={viewStudent.photoDriveLink.includes('drive.google.com') ? `https://drive.google.com/uc?export=view&id=${viewStudent.photoDriveLink.match(/\\/d\\/([a-zA-Z0-9_-]+)/)?.[1]}` : viewStudent.photoDriveLink} 
+                     src={viewStudent.photoDriveLink.includes('drive.google.com') ? `https://drive.google.com/uc?export=view&id=${viewStudent.photoDriveLink.split('/d/')[1]?.split('/')[0] || ''}` : viewStudent.photoDriveLink}
                      alt="Profile" 
                      className="a4-profile-pic" 
                    />
