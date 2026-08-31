@@ -288,28 +288,28 @@ const StudentDashboard = () => {
 
       {viewStudent && (
         <div className="modal-overlay" onClick={() => setViewStudent(null)}>
-          <div className="modal-content a4-resume-modal" onClick={e => e.stopPropagation()}>
+          <div className="modal-content resume-modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setViewStudent(null)}>&times;</button>
-            <div className="a4-container">
+            <div className="resume-container">
               {/* Left sidebar */}
-              <div className="a4-sidebar">
+              <div className="resume-sidebar">
                  {viewStudent.photoDriveLink && (
                    <img 
                      src={viewStudent.photoDriveLink.includes('drive.google.com') ? `https://drive.google.com/uc?export=view&id=${viewStudent.photoDriveLink.split('/d/')[1]?.split('/')[0] || ''}` : viewStudent.photoDriveLink}
                      alt="Profile" 
-                     className="a4-profile-pic" 
+                     className="resume-profile-pic" 
                    />
                  )}
-                 <h2 className="a4-name">{viewStudent.name}</h2>
-                 <p className="a4-department">{viewStudent.department}</p>
-                 <div className="a4-details">
+                 <h2 className="resume-name">{viewStudent.name}</h2>
+                 <p className="resume-department">{viewStudent.department}</p>
+                 <div className="resume-details">
                     <p><strong>Reg No:</strong> {viewStudent.regNo}</p>
                     <p><strong>Email:</strong> {viewStudent.email}</p>
                     <p><strong>Mobile:</strong> {viewStudent.mobileNumber}</p>
                     <p><strong>Gender:</strong> {viewStudent.gender}</p>
                     <p><strong>Resident Type:</strong> {viewStudent.residentType}</p>
                  </div>
-                 <div className="a4-education">
+                 <div className="resume-education">
                     <h3>Education</h3>
                     <p><strong>SSLC:</strong> {viewStudent.sslcPercentage}% ({viewStudent.sslcYear})</p>
                     <p><strong>HSC:</strong> {viewStudent.hscPercentage}% ({viewStudent.hscYear})</p>
@@ -317,7 +317,7 @@ const StudentDashboard = () => {
                     {viewStudent.pgPercentage != null && <p><strong>PG:</strong> {viewStudent.pgPercentage}% ({viewStudent.pgYear})</p>}
                     <p><strong>Graduation:</strong> {viewStudent.graduationYear}</p>
                  </div>
-                 <div className="a4-links">
+                 <div className="resume-links">
                     <h3>Links</h3>
                     {viewStudent.githubId && <a href={viewStudent.githubId} target="_blank" rel="noreferrer">GitHub</a>}
                     {viewStudent.linkedinUrl && <a href={viewStudent.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>}
@@ -326,13 +326,13 @@ const StudentDashboard = () => {
               </div>
               
               {/* Main content - Resume Preview */}
-              <div className="a4-main-content">
+              <div className="resume-main-content">
                 <h3>Resume</h3>
                 {viewStudent.resumeDriveLink ? (
                   <iframe 
                     src={viewStudent.resumeDriveLink.includes('drive.google.com') ? viewStudent.resumeDriveLink.replace('/view', '/preview') : viewStudent.resumeDriveLink} 
                     title="Resume Viewer" 
-                    className="doc-viewer a4-iframe"
+                    className="doc-viewer resume-iframe"
                   ></iframe>
                 ) : (
                   <div className="no-resume">
